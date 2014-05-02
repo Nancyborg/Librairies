@@ -30,7 +30,7 @@ bool AX12Base::changeID(uint8_t new_id) {
 }
 
 bool AX12Base::changeBaud(int new_baud) {
-    uint8_t val = round(2000000 / (float) baud) - 1;
+    uint8_t val = round((2000000 / (double) new_baud) - 1);
     bool ret = writeRegister1(AX12_ROM_BAUD_RATE, val);
 
     if (ret) {
