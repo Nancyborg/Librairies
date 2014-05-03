@@ -225,6 +225,7 @@ uint8_t AX12Base::checksum(uint8_t data[], uint8_t len) {
 
 void AX12Base::setCommError(int comm_error) {
     this->comm_error = comm_error;
-    printf("comm_error=%d\n", comm_error);
+    if (comm_error)
+        printf("comm_error=%d\n", comm_error);
 }
 

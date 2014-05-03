@@ -8,7 +8,7 @@
 #ifndef AX12_MBED_H
 #define AX12_MBED_H
 
-#include "AX12Base.h"
+#include "../AX12Base.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>

@@ -34,16 +34,15 @@ public:
 private:
     int readBytes(uint8_t *bytes, int n, int timeout) {
         Timer timer;
-
         timer.start();
 
         for (int i = 0; i < n; i++) {
             if (timeout >= 0) {
-                while (!ax12.readable() && timer.read_ms() <= timeout)
+                while (!ax12.readable() && timer.read_us() <= timeout)
                     ;
 
                 if (!ax12.readable()) {
-                    printf("got timeout (%d >= %d)\n", timer.read_ms(),  timeout);
+                    printf("got timeout (%d >= %d)\n", timer.read_us(),  timeout);
                     setCommError(AX12_COMM_ERROR_TIMEOUT);
                     return -1;
                 }
