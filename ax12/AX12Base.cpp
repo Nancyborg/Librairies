@@ -8,7 +8,7 @@ AX12Base::AX12Base(int id, int baud /* = 1000000 */) {
     setCurrentBaud(baud);
 }
 
-void AX12Base::wait() {
+void AX12Base::pingWait() {
     while (!ping());
 }
 

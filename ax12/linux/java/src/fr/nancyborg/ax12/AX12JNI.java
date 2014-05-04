@@ -8,6 +8,9 @@
 
 package fr.nancyborg.ax12;
 
+import cz.adamh.utils.NativeUtils;
+import java.io.IOException;
+
 class AX12JNI {
   public final static native int AX12Base_AX12_BROADCAST_get();
   public final static native int AX12Base_AX12_INSTR_PING_get();
@@ -68,7 +71,7 @@ class AX12JNI {
   public final static native int AX12Base_readRegister2(long jarg1, AX12Base jarg1_, long jarg2);
   public final static native boolean AX12Base_writeRegister1(long jarg1, AX12Base jarg1_, long jarg2, long jarg3);
   public final static native boolean AX12Base_writeRegister2(long jarg1, AX12Base jarg1_, long jarg2, long jarg3);
-  public final static native void AX12Base_wait(long jarg1, AX12Base jarg1_);
+  public final static native void AX12Base_pingWait(long jarg1, AX12Base jarg1_);
   public final static native boolean AX12Base_reset(long jarg1, AX12Base jarg1_);
   public final static native boolean AX12Base_ping(long jarg1, AX12Base jarg1_);
   public final static native float AX12Base_getPresentPosition(long jarg1, AX12Base jarg1_);
@@ -100,5 +103,14 @@ class AX12JNI {
   public final static native void delete_AX12Linux(long jarg1);
   public final static native int AX12Linux_getSysError(long jarg1, AX12Linux jarg1_);
   public final static native void AX12Linux_setCurrentBaud(long jarg1, AX12Linux jarg1_, int jarg2);
+
+    static {
+        try {
+            NativeUtils.loadLibraryFromJar("/libs/libAX12Java.so");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
   public final static native long SWIGAX12LinuxUpcast(long jarg1);
 }

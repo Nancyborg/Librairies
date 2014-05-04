@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." default="compile" name="ax12">
+    <target name="compile">
+        <javac srcdir="src"
+            destdir="bin"
+            source="1.7"
+            target="1.7" />
+        <jar destfile="ax12.jar">
+            <fileset dir="bin" />
+            <fileset dir="src" />
+            <fileset dir=".">
+                <include name="libs/*" />
+            </fileset>
+        </jar>
+    </target>
+</project>

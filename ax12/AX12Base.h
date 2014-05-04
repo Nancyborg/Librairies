@@ -163,7 +163,7 @@ class AX12Base {
          * \endcode
          * \sa ping()
          */
-        virtual void wait();
+        virtual void pingWait();
 
         /**
          * \brief Send a RESET command to the AX12.

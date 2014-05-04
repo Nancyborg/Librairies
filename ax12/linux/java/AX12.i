@@ -7,8 +7,12 @@
 
 %include "../../AX12Base.h"
 %include "../AX12Linux.h"
+%pragma(java) jniclassimports=%{
+import cz.adamh.utils.NativeUtils;
+import java.io.IOException;
+%}
 
-%pragma(java) modulecode=%{
+%pragma(java) jniclasscode=%{
     static {
         try {
             NativeUtils.loadLibraryFromJar("/libs/libAX12Java.so");

@@ -9,13 +9,4 @@
 package fr.nancyborg.ax12;
 
 public class AX12 {
-
-    static {
-        try {
-            NativeUtils.loadLibraryFromJar("/libs/libAX12Java.so");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
 }

@@ -59,8 +59,8 @@ public class AX12Base {
     return AX12JNI.AX12Base_writeRegister2(swigCPtr, this, SWIGTYPE_p_uint8_t.getCPtr(reg_start), SWIGTYPE_p_uint16_t.getCPtr(val));
   }
 
-  public void wait() {
-    AX12JNI.AX12Base_wait(swigCPtr, this);
+  public void pingWait() {
+    AX12JNI.AX12Base_pingWait(swigCPtr, this);
   }
 
   public boolean reset() {

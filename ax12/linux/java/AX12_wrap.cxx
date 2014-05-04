@@ -1028,14 +1028,14 @@ SWIGEXPORT jboolean JNICALL Java_fr_nancyborg_ax12_AX12JNI_AX12Base_1writeRegist
 }
 
 
-SWIGEXPORT void JNICALL Java_fr_nancyborg_ax12_AX12JNI_AX12Base_1wait(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT void JNICALL Java_fr_nancyborg_ax12_AX12JNI_AX12Base_1pingWait(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   AX12Base *arg1 = (AX12Base *) 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   arg1 = *(AX12Base **)&jarg1; 
-  (arg1)->wait();
+  (arg1)->pingWait();
 }
 
 
