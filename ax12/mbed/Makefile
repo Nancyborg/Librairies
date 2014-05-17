@@ -21,7 +21,7 @@ LIBS_SUFFIX=
 include $(GCC4MBED_DIR)/build/gcc4mbed.mk
 
 term:
-	picocom /dev/ttyACM0 -b 115200 --imap lfcrlf
+	picocom /dev/ttyACM0 -b 115200 --imap lfcrlf -c
 
 doc:
 	doxygen

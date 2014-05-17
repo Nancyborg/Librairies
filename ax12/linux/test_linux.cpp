@@ -1,15 +1,15 @@
 #include "AX12Linux.h"
+#include <stdlib.h>
 
-#define ID 1
 #define BAUDRATE 115200
 
 int main(int argc, char **argv) {
-    if (argc < 2) {
-        printf("usage: %s <serial device>\n", argv[0]);
+    if (argc < 3) {
+        printf("usage: %s <serial device> <id>\n", argv[0]);
         return 1;
     }
 
-    AX12 ax(argv[1], ID, BAUDRATE);
+    AX12 ax(argv[1], atoi(argv[2]), BAUDRATE);
     printf("waiting...\n");
     ax.pingWait();
 

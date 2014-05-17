@@ -1,4 +1,4 @@
-all: ax12.jar
+all: ax12.jar ../../../../ia-raspberry/libs/ax12.jar
 
 CXX ?= g++
 SWIG ?= swig
@@ -7,6 +7,9 @@ JAVA_INCLUDE ?= -I/opt/java/include -I/opt/java/include/linux
 ANT ?= ant
 
 -include Makefile.local
+
+../../../../ia-raspberry/libs/ax12.jar: ax12.jar
+	cp $< $@
 
 libs/libAX12Java.so: ../../AX12Base.cpp
 	$(SWIG) -c++ -java -package fr.nancyborg.ax12 -outdir src/fr/nancyborg/ax12 AX12.i

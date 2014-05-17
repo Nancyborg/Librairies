@@ -3,6 +3,8 @@
 
 #include "AX12Base.h"
 
+static void dumpHex(const uint8_t *buffer, int len);
+
 AX12Base::AX12Base(int id, int baud /* = 1000000 */) {
     setCurrentID(id);
     setCurrentBaud(baud);
@@ -149,6 +151,8 @@ bool AX12Base::writePacket(uint8_t instr, uint8_t len, uint8_t data[]) {
 
     send_packet[pos++] = checksum(&send_packet[2], len + 3);
 
+    printf("writePacket: ");
+    dumpHex(send_packet, pos);
     if (writeBytes(send_packet, pos) != pos)
         return false;
 
@@ -161,7 +165,7 @@ bool AX12Base::writePacket(uint8_t instr, uint8_t len, uint8_t data[]) {
         return true;
 }
 
-void dumpHex(const uint8_t *buffer, int len) {
+static void dumpHex(const uint8_t *buffer, int len) {
     for (int i = 0; i < len; i++) {
         printf("%02x ", buffer[i]);
     }
@@ -209,8 +213,8 @@ bool AX12Base::readPacket() {
     }
 
 end:
-/*    printf("read packet : ");
-    dumpHex(recv_packet, recv_packet_len + 4);*/
+    printf("read packet : ");
+    dumpHex(recv_packet, len + 4);
     return !comm_error;
 }
 
