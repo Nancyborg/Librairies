@@ -1,11 +1,14 @@
 #include <string.h>
 #include <stdio.h>
+#include <stdarg.h>
 
 #include "AX12Base.h"
 
 static void dumpHex(const uint8_t *buffer, int len);
 
-AX12Base::AX12Base(int id, int baud /* = 1000000 */) {
+AX12Base::AX12Base(int id, int baud /* = 1000000 */)
+    : debugOn(false)
+{
     setCurrentID(id);
     setCurrentBaud(baud);
 }
@@ -119,7 +122,7 @@ bool AX12Base::readData(uint8_t reg_start, uint8_t len) {
     bool ret = writePacket(AX12_INSTR_READ_DATA, 2, buffer);
 
     if (ret && getDataSize() != len) {
-        printf("readData: returned data length (%d) different than requested (%d)\n", getDataSize(), len);
+        debug("readData: returned data length (%d) different than requested (%d)\n", getDataSize(), len);
     }
 
     return ret;
@@ -135,7 +138,10 @@ bool AX12Base::writeData(uint8_t reg_start, uint8_t len, const uint8_t data[]) {
 // Instruction packet : FF FF <ID> <LEN> <INSTR> <PAR0>..<PARN> <CKSUM>
 bool AX12Base::writePacket(uint8_t instr, uint8_t len, uint8_t data[]) {
     uint8_t send_packet[6 + len];
+    bool ret = false;
 
+
+    beginComm();
     setCommError(AX12_COMM_ERROR_NONE);
     flushInput();
 
@@ -151,25 +157,24 @@ bool AX12Base::writePacket(uint8_t instr, uint8_t len, uint8_t data[]) {
 
     send_packet[pos++] = checksum(&send_packet[2], len + 3);
 
-    printf("writePacket: ");
+    debug("writePacket: ");
     dumpHex(send_packet, pos);
+
     if (writeBytes(send_packet, pos) != pos)
-        return false;
+        goto end;
 
     if (comm_error)
-        return false;
+        goto end;
 
     if (id != AX12_BROADCAST)
-        return readPacket();
+        ret = readPacket();
     else
-        return true;
-}
+        ret = true;
 
-static void dumpHex(const uint8_t *buffer, int len) {
-    for (int i = 0; i < len; i++) {
-        printf("%02x ", buffer[i]);
-    }
-    printf("\n");
+end:
+    endComm();
+
+    return ret;
 }
 
 // Status packet : FF FF <ID> <LEN> <ERROR> <PAR0>...<PARN> <CKSUM>
@@ -187,14 +192,11 @@ bool AX12Base::readPacket() {
 
     if (recv_packet[2] != id) {
         setCommError(AX12_COMM_ERROR_ID);
-        printf("invalid id: %d\n", recv_packet[2]);
+        debug("invalid id: %d\n", recv_packet[2]);
         goto end;
     }
 
     len = recv_packet[3];
-    
-//    printf("read: ID=%d\n", recv_packet[0]);
-//    printf("read: LEN=%d\n", recv_packet[1]);
 
     if (readBytes(recv_packet + 4, len, timeout) != len)
         goto end;
@@ -203,17 +205,17 @@ bool AX12Base::readPacket() {
     cksum2 = recv_packet[len + 3];
 
     if (cksum1 != cksum2) {
-        printf("checksum error, calculated=%x, received=%x\n", cksum1, cksum2);
+        debug("checksum error, calculated=%x, received=%x\n", cksum1, cksum2);
         comm_error |= AX12_COMM_ERROR_CHECKSUM;
         goto end;        
     }
 
     if (getErrors()) {
-        printf("error field=%x\n", getErrors());
+        debug("error field=%x\n", getErrors());
     }
 
 end:
-    printf("read packet : ");
+    debug("read packet : ");
     dumpHex(recv_packet, len + 4);
     return !comm_error;
 }
@@ -230,6 +232,23 @@ uint8_t AX12Base::checksum(uint8_t data[], uint8_t len) {
 void AX12Base::setCommError(int comm_error) {
     this->comm_error = comm_error;
     if (comm_error)
-        printf("comm_error=%d\n", comm_error);
+        debug("comm_error=%d\n", comm_error);
+}
+
+
+void AX12Base::debug(const char *format, ...) {
+    if (!debugOn)
+        return;
+    va_list argptr;
+    va_start(argptr, format);
+    vfprintf(stderr, format, argptr);
+    va_end(argptr);
+}
+
+void AX12Base::dumpHex(const uint8_t *buffer, int len) {
+    for (int i = 0; i < len; i++) {
+        debug("%02x ", buffer[i]);
+    }
+    debug("\n");
 }
 

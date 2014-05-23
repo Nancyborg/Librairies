@@ -219,6 +219,16 @@ static void SWIGUNUSED SWIG_JavaThrowException(JNIEnv *jenv, SWIG_JavaExceptionC
 extern "C" {
 #endif
 
+SWIGEXPORT void JNICALL Java_fr_nancyborg_ax12_AX12JNI_delete_1AX12Base(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+  AX12Base *arg1 = (AX12Base *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = *(AX12Base **)&jarg1; 
+  delete arg1;
+}
+
+
 SWIGEXPORT jint JNICALL Java_fr_nancyborg_ax12_AX12JNI_AX12Base_1AX12_1BROADCAST_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
@@ -1371,6 +1381,19 @@ SWIGEXPORT jint JNICALL Java_fr_nancyborg_ax12_AX12JNI_AX12Base_1getCommError(JN
 }
 
 
+SWIGEXPORT void JNICALL Java_fr_nancyborg_ax12_AX12JNI_AX12Base_1setDebug(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jboolean jarg2) {
+  AX12Base *arg1 = (AX12Base *) 0 ;
+  bool arg2 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(AX12Base **)&jarg1; 
+  arg2 = jarg2 ? true : false; 
+  (arg1)->setDebug(arg2);
+}
+
+
 SWIGEXPORT jboolean JNICALL Java_fr_nancyborg_ax12_AX12JNI_AX12Base_1writePacket(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jlong jarg3, jlong jarg4) {
   jboolean jresult = 0 ;
   AX12Base *arg1 = (AX12Base *) 0 ;
@@ -1402,6 +1425,40 @@ SWIGEXPORT jboolean JNICALL Java_fr_nancyborg_ax12_AX12JNI_AX12Base_1writePacket
   jresult = (jboolean)result; 
   
   return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_fr_nancyborg_ax12_AX12JNI_AX12Base_1debug(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
+  AX12Base *arg1 = (AX12Base *) 0 ;
+  char *arg2 = (char *) 0 ;
+  void *arg3 = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(AX12Base **)&jarg1; 
+  arg2 = 0;
+  if (jarg2) {
+    arg2 = (char *)jenv->GetStringUTFChars(jarg2, 0);
+    if (!arg2) return ;
+  }
+  (arg1)->debug((char const *)arg2,arg3);
+  if (arg2) jenv->ReleaseStringUTFChars(jarg2, (const char *)arg2);
+}
+
+
+SWIGEXPORT void JNICALL Java_fr_nancyborg_ax12_AX12JNI_AX12Base_1dumpHex(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jint jarg3) {
+  AX12Base *arg1 = (AX12Base *) 0 ;
+  uint8_t *arg2 = (uint8_t *) 0 ;
+  int arg3 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(AX12Base **)&jarg1; 
+  arg2 = *(uint8_t **)&jarg2; 
+  arg3 = (int)jarg3; 
+  (arg1)->dumpHex((uint8_t const *)arg2,arg3);
 }
 
 
@@ -1470,16 +1527,6 @@ SWIGEXPORT jlong JNICALL Java_fr_nancyborg_ax12_AX12JNI_AX12Base_1floatToRegVal(
   result = AX12Base::floatToRegVal(arg1);
   *(uint16_t **)&jresult = new uint16_t((const uint16_t &)result); 
   return jresult;
-}
-
-
-SWIGEXPORT void JNICALL Java_fr_nancyborg_ax12_AX12JNI_delete_1AX12Base(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-  AX12Base *arg1 = (AX12Base *) 0 ;
-  
-  (void)jenv;
-  (void)jcls;
-  arg1 = *(AX12Base **)&jarg1; 
-  delete arg1;
 }
 
 

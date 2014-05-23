@@ -1,4 +1,8 @@
-%module AX12
+%module AX12;
+/*%feature("director");
+%feature("nodirector") AX12Base;
+%feature("nodirector") AX12Linux::debug;
+*/
 
 %{
 #include "../../AX12Base.h"
@@ -7,6 +11,7 @@
 
 %include "../../AX12Base.h"
 %include "../AX12Linux.h"
+
 %pragma(java) jniclassimports=%{
 import cz.adamh.utils.NativeUtils;
 import java.io.IOException;

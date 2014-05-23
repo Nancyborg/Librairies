@@ -18,6 +18,7 @@
  */
 class AX12Base {
     public:
+        virtual ~AX12Base() { }
 
         /**
          * \brief The broadcast address
@@ -110,7 +111,7 @@ class AX12Base {
          * \sa getCommError(), getErrors()
          */
         bool readData(uint8_t reg_start, uint8_t len);
-        
+
         /**
          * \brief Write \a len bytes starting at address \a reg_start
          * \param reg_start start address
@@ -145,7 +146,7 @@ class AX12Base {
          * \sa getCommError(), getErrors()
          */
         bool writeRegister1(uint8_t reg_start, uint8_t val);
-        
+
         /**
          * \brief Write a two-byte register starting at address \a reg_start
          * \param reg_start lower register address
@@ -171,7 +172,7 @@ class AX12Base {
          * This resets the AX12 EEPROM to factory defaults.
          *
          * The ID is set to 1 and the baud rate to 1,000,000.
-         * 
+         *
          * \return \a true if no communication error occured, \a false otherwise
          */
         bool reset();
@@ -189,7 +190,7 @@ class AX12Base {
          * \sa getCommError()
          */
         float getPresentPosition();
-        
+
         /**
          * \brief Get the current speed of the AX12.
          * \return the current speed in RPM (a positive value indicates a clockwise rotation, while a negative value indicates a counter-clockwise rotation) or -1 if a communication error occured.
@@ -204,7 +205,7 @@ class AX12Base {
          * \return \a true if no communication error occured, \a false otherwise
          */
         bool setGoalPosition(float angle, bool block = false);
-        
+
         /**
          * \brief Set the goal speed of the AX12.
          * \param speed the angle in degrees (0 - 300)
@@ -248,7 +249,7 @@ class AX12Base {
          * \param new_baud the new baud rate
          */
         bool changeBaud(int new_baud);
-        
+
         /**
          * \brief Set the address of the AX12 we want to send messages to. This does not send anything to the AX12.
          *
@@ -261,7 +262,7 @@ class AX12Base {
          *
          * If the special address \ref AX12_BROADCAST is used, every connected AX12 will interpret sent messages but no status packet will be sent.
          */
-        virtual void setCurrentBaud(uint8_t new_baud) {
+        void setCurrentBaud(uint8_t new_baud) {
             baud = new_baud;
             timeout = 20e6 / baud;
         }
@@ -294,12 +295,17 @@ class AX12Base {
          * \brief Get the ID in the latest status packet sent by the AX12.
          */
         uint8_t getReceiverId() { return recv_packet[2]; }
-       
+
         /**
          * \brief Get the communication error status of the last sent instruction as defined in the \ref AX12_Comm_Error enum
          */
         int getCommError() { return comm_error; }
-        
+
+
+        void setDebug(bool on) {
+            debugOn = on;
+        }
+
         /**
          * \brief Send an instruction packet to the AX12 and read the status packet (unless the broadcast ID is used).
          * \param instr The instruction to send (as defined in the \ref AX12_Instr enum).
@@ -308,6 +314,9 @@ class AX12Base {
          * \return \a true if no communication error occured, \a false otherwise
          */
         bool writePacket(uint8_t instr, uint8_t len, uint8_t data[]);
+
+        virtual void debug(const char *format, ...);
+        virtual void dumpHex(const uint8_t *buffer, int len);
 
         /**
          * \brief Convert an angle value (0-300°) to a raw register value (0-3ff)
@@ -347,7 +356,7 @@ class AX12Base {
          * \remarks This method must be implemented by subclasses. If an error occurs, the implementation must return -1 and comm_error should be set.
          * \return the number of bytes read or -1 if an error occured
          */
-        virtual int readBytes(uint8_t*buffer, int len, int timeout) = 0;
+        virtual int readBytes(uint8_t *buffer, int len, int timeout) = 0;
 
         /**
          * \brief Write \a len bytes to the AX12 serial bus.
@@ -357,6 +366,18 @@ class AX12Base {
          * \return the number of bytes written or -1 if an error occured
          */
         virtual int writeBytes(const uint8_t *buffer, int len) = 0;
+
+        /**
+         * \brief Called at the beginning of a communication (read + write)
+         * This can be used to reserve a lock
+         */
+        virtual void beginComm() { };
+
+        /**
+         * \brief Called at the end of a communication (read + write)
+         * This can be used to release a lock
+         */
+        virtual void endComm() { };
 
         /**
          * \brief Flush the serial input buffer
@@ -375,6 +396,7 @@ class AX12Base {
         int id;
         int baud;
         int comm_error;
+        bool debugOn;
 };
 
 #endif

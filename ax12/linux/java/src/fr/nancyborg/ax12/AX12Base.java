@@ -144,8 +144,20 @@ public class AX12Base {
     return AX12JNI.AX12Base_getCommError(swigCPtr, this);
   }
 
+  public void setDebug(boolean on) {
+    AX12JNI.AX12Base_setDebug(swigCPtr, this, on);
+  }
+
   public boolean writePacket(SWIGTYPE_p_uint8_t instr, SWIGTYPE_p_uint8_t len, SWIGTYPE_p_uint8_t data) {
     return AX12JNI.AX12Base_writePacket(swigCPtr, this, SWIGTYPE_p_uint8_t.getCPtr(instr), SWIGTYPE_p_uint8_t.getCPtr(len), SWIGTYPE_p_uint8_t.getCPtr(data));
+  }
+
+  public void debug(String format) {
+    AX12JNI.AX12Base_debug(swigCPtr, this, format);
+  }
+
+  public void dumpHex(SWIGTYPE_p_uint8_t buffer, int len) {
+    AX12JNI.AX12Base_dumpHex(swigCPtr, this, SWIGTYPE_p_uint8_t.getCPtr(buffer), len);
   }
 
   public static SWIGTYPE_p_uint16_t degToRegVal(float val) {

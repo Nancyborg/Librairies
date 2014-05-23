@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
+#include <pthread.h>
 
 #ifndef AX12
 #define AX12 AX12Linux
@@ -41,7 +42,7 @@ public:
         int baudcst = rate_to_constant(baud);
 
         if (!baudcst) {
-            printf("Baud rate not supported : %d\n", baud);
+            debug("Baud rate not supported : %d\n", baud);
             setCommError(AX12_COMM_ERROR_SYSTEM);
             sys_error = EINVAL;
             return;
@@ -69,6 +70,7 @@ public:
         close(fd);
     }
 
+
     /** \brief Get the latest system error code (errno) */
     int getSysError() {
         if (getCommError() & AX12_COMM_ERROR_SYSTEM)
@@ -85,6 +87,18 @@ public:
         tcsetattr(fd, TCSANOW, &newtio);
     }
 private:
+    void beginComm() {
+        if (pthread_mutex_lock(&mutex)) {
+            debug("pthread_mutex_lock failed");
+        }
+    }
+
+    void endComm() {
+        if (pthread_mutex_unlock(&mutex)) {
+            debug("pthread_mutex_unlock failed");
+        }
+    }
+
 
     static int rate_to_constant(int baudrate) {
 #define B(x) case x: return B##x
@@ -142,7 +156,6 @@ private:
             }
             n += ret;
         }
-        printf("writeBytes(%s, %d) = %d\n", bytes, n, ret);
         return n;
     }
 
@@ -153,6 +166,7 @@ private:
     int fd;
     int sys_error;
     struct termios oldtio, newtio;
+    pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 };
 
 #undef ERROR

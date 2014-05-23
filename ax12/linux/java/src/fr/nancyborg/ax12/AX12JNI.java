@@ -12,6 +12,7 @@ import cz.adamh.utils.NativeUtils;
 import java.io.IOException;
 
 class AX12JNI {
+  public final static native void delete_AX12Base(long jarg1);
   public final static native int AX12Base_AX12_BROADCAST_get();
   public final static native int AX12Base_AX12_INSTR_PING_get();
   public final static native int AX12Base_AX12_INSTR_READ_DATA_get();
@@ -92,12 +93,14 @@ class AX12JNI {
   public final static native int AX12Base_getErrors(long jarg1, AX12Base jarg1_);
   public final static native long AX12Base_getReceiverId(long jarg1, AX12Base jarg1_);
   public final static native int AX12Base_getCommError(long jarg1, AX12Base jarg1_);
+  public final static native void AX12Base_setDebug(long jarg1, AX12Base jarg1_, boolean jarg2);
   public final static native boolean AX12Base_writePacket(long jarg1, AX12Base jarg1_, long jarg2, long jarg3, long jarg4);
+  public final static native void AX12Base_debug(long jarg1, AX12Base jarg1_, String jarg2);
+  public final static native void AX12Base_dumpHex(long jarg1, AX12Base jarg1_, long jarg2, int jarg3);
   public final static native long AX12Base_degToRegVal(float jarg1);
   public final static native float AX12Base_regValToDeg(long jarg1);
   public final static native float AX12Base_regValToFloat(long jarg1);
   public final static native long AX12Base_floatToRegVal(float jarg1);
-  public final static native void delete_AX12Base(long jarg1);
   public final static native long new_AX12Linux__SWIG_0(String jarg1, int jarg2, int jarg3);
   public final static native long new_AX12Linux__SWIG_1(String jarg1, int jarg2);
   public final static native void delete_AX12Linux(long jarg1);
