@@ -5,7 +5,8 @@
 #ifndef DSTAR_H
 #define DSTAR_H
 
-#include <math.h>
+#include <cmath>
+// #include <math.h>
 #include <stack>
 #include <queue>
 #include <list>
@@ -31,24 +32,22 @@ class state {
   }
   
   bool operator > (const state &s2) const {
-    if (k.first-0.00001 > s2.k.first) return true;
-    else if (k.first < s2.k.first-0.00001) return false;
+    if(k.first-0.00001 > s2.k.first) return true;
+    else if(k.first < s2.k.first-0.00001) return false;
     return k.second > s2.k.second;
   }
 
   bool operator <= (const state &s2) const {
-    if (k.first < s2.k.first) return true;
-    else if (k.first > s2.k.first) return false;
+    if(k.first < s2.k.first) return true;
+    else if(k.first > s2.k.first) return false;
     return k.second < s2.k.second + 0.00001;
   }
   
-
   bool operator < (const state &s2) const {
-    if (k.first + 0.000001 < s2.k.first) return true;
-    else if (k.first - 0.000001 > s2.k.first) return false;
+    if(k.first + 0.000001 < s2.k.first) return true;
+    else if(k.first - 0.000001 > s2.k.first) return false;
     return k.second < s2.k.second;
   }
-   
 };
 
 struct ipoint2 {
@@ -56,7 +55,6 @@ struct ipoint2 {
 };
 
 struct cellInfo {
-
   double g;
   double rhs;
   double cost;
@@ -72,20 +70,18 @@ class state_hash {
 
 
 typedef priority_queue<state, vector<state>, greater<state> > ds_pq;
-typedef unordered_map<state,cellInfo, state_hash, equal_to<state> > ds_ch;
+typedef unordered_map<state, cellInfo, state_hash, equal_to<state> > ds_ch;
 typedef unordered_map<state, float, state_hash, equal_to<state> > ds_oh;
 
 
 class Dstar {
-  
- public:
-    
+ public:  
   Dstar();
-  void   init(int sX, int sY, int gX, int gY);
-  void   updateCell(int x, int y, double val);
-  void   updateStart(int x, int y);
-  void   updateGoal(int x, int y);
-  bool   replan();
+  void init(int sX, int sY, int gX, int gY);
+  void updateCell(int x, int y, double val);
+  void updateStart(int x, int y);
+  void updateGoal(int x, int y);
+  bool replan();
   // void   draw();
   // void   drawCell(state s,float z);
 
@@ -94,7 +90,6 @@ class Dstar {
   static vector<state>* properRDP(vector<state>* points, double epsilon);
   
  private:
-  
   vector<state>* path;
 
   double C1;
@@ -111,7 +106,7 @@ class Dstar {
   double getG(state u);
   double getRHS(state u);
   void   setG(state u, double g);
-  double setRHS(state u, double rhs);
+  void   setRHS(state u, double rhs);
   double eightCondist(state a, state b);
   int    computeShortestPath();
   void   updateVertex(state u);

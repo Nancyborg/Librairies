@@ -4,7 +4,10 @@
 
 #include "Dstar.h"
 #include <stdio.h>
-#include <math.h>
+#include <cmath>
+// #include <math.h>
+
+#define M_SQRT2 1.41421356237309504880
 
 // #ifdef USE_OPEN_GL
 // #ifdef MACOS
@@ -15,6 +18,7 @@
 // #endif
 
 int main(void) {
+  printf("Hello World! You all lose!");
   Dstar* pf = new Dstar();
 
   pf->init(18, 18, 180, 180);
@@ -34,8 +38,8 @@ int main(void) {
     pf->updateCell(i, 56, -1);
     pf->updateCell(i, 124, -1);
   }
-  printf("Start node: (18,18)\n");
-  printf("End node: (280,280)\n");
+  printf("Start node: (18, 18)\n");
+  printf("End node: (280, 280)\n");
   pf->replan();
 
   // vector<state> path = pf->getPathReduced();
@@ -104,7 +108,7 @@ Dstar::Dstar() {
  */
 float Dstar::keyHashCode(state u) {
 
-  return (float)(u.k.first + 1193*u.k.second);
+  return(float)(u.k.first + 1193*u.k.second);
 
 }
 
@@ -116,8 +120,8 @@ float Dstar::keyHashCode(state u) {
 bool Dstar::isValid(state u) {
   
   ds_oh::iterator cur = openHash.find(u);
-  if (cur == openHash.end()) return false;
-  if (!close(keyHashCode(u), cur->second)) return false;
+  if(cur == openHash.end()) return false;
+  if(!close(keyHashCode(u), cur->second)) return false;
   return true;
   
 }
@@ -139,7 +143,7 @@ vector<state>* Dstar::properRDP(vector<state>* points, double epsilon) {
   }
   int index = -1;
   double dist = 0.0;
-  for(int i = 1; i < points->size() - 1; i++) {
+  for(unsigned int i = 1; i < points->size() - 1; i++) {
     double cDist = findPerpendicularDistance(points->at(i), firstPoint, lastPoint);
     if(cDist > dist) {
       dist = cDist;
@@ -157,7 +161,11 @@ vector<state>* Dstar::properRDP(vector<state>* points, double epsilon) {
     vector<state>* rs = new vector<state>(r1->begin(), r1->end() - 1);
     rs->insert(rs->end(), r2->begin(), r2->end());
 
-    delete l1, l2, r1, r2;
+    delete l1;
+    delete l2;
+    delete r1;
+    delete r2;
+
     return rs;
   } else {
     vector<state>* rs = new vector<state>();
@@ -193,8 +201,8 @@ bool Dstar::occupied(state u) {
   
   ds_ch::iterator cur = cellHash.find(u);
   
-  if (cur == cellHash.end()) return false;
-  return (cur->second.cost < 0);
+  if(cur == cellHash.end()) return false;
+  return(cur->second.cost < 0);
 }
 
 /* void Dstar::init(int sX, int sY, int gX, int gY)
@@ -222,7 +230,7 @@ void Dstar::init(int sX, int sY, int gX, int gY) {
 
   cellHash[s_goal] = tmp;
 
-  tmp.g = tmp.rhs = heuristic(s_start,s_goal);
+  tmp.g = tmp.rhs = heuristic(s_start, s_goal);
   tmp.cost = C1;
   cellHash[s_start] = tmp;
   s_start = calculateKey(s_start);
@@ -236,10 +244,10 @@ void Dstar::init(int sX, int sY, int gX, int gY) {
  */
 void Dstar::makeNewCell(state u) {
   
-  if (cellHash.find(u) != cellHash.end()) return;
+  if(cellHash.find(u) != cellHash.end()) return;
 
   cellInfo tmp;
-  tmp.g       = tmp.rhs = heuristic(u,s_goal);
+  tmp.g       = tmp.rhs = heuristic(u, s_goal);
   tmp.cost    = C1;
   cellHash[u] = tmp;
   
@@ -250,11 +258,9 @@ void Dstar::makeNewCell(state u) {
  * Returns the G value for state u.
  */
 double Dstar::getG(state u) {
-
-  if (cellHash.find(u) == cellHash.end()) 
-    return heuristic(u,s_goal);
+  if(cellHash.find(u) == cellHash.end()) 
+    return heuristic(u, s_goal);
   return cellHash[u].g;
-  
 }
 
 /* double Dstar::getRHS(state u)
@@ -262,13 +268,11 @@ double Dstar::getG(state u) {
  * Returns the rhs value for state u.
  */
 double Dstar::getRHS(state u) {
+  if(u == s_goal) return 0;  
 
-  if (u == s_goal) return 0;  
-
-  if (cellHash.find(u) == cellHash.end()) 
-    return heuristic(u,s_goal);
+  if(cellHash.find(u) == cellHash.end()) 
+    return heuristic(u, s_goal);
   return cellHash[u].rhs;
-  
 }
 
 /* void Dstar::setG(state u, double g)
@@ -276,7 +280,6 @@ double Dstar::getRHS(state u) {
  * Sets the G value for state u
  */
 void Dstar::setG(state u, double g) {
-  
   makeNewCell(u);  
   cellHash[u].g = g; 
 }
@@ -285,11 +288,9 @@ void Dstar::setG(state u, double g) {
  * --------------------------
  * Sets the rhs value for state u
  */
-double Dstar::setRHS(state u, double rhs) {
-  
+void Dstar::setRHS(state u, double rhs) {
   makeNewCell(u);
   cellHash[u].rhs = rhs;
-
 }
 
 /* double Dstar::eightCondist(state a, state b) 
@@ -297,15 +298,14 @@ double Dstar::setRHS(state u, double rhs) {
  * Returns the 8-way distance between state a and state b.
  */
 double Dstar::eightCondist(state a, state b) {
-  double temp;
   double min = abs(a.x - b.x);
   double max = abs(a.y - b.y);
-  if (min > max) {
+  if(min > max) {
     double temp = min;
     min = max;
     max = temp;
   }
-  return ((M_SQRT2-1.0)*min + max);
+  return((M_SQRT2-1.0)*min + max);
 }
 
 /* int Dstar::computeShortestPath()
@@ -322,14 +322,14 @@ int Dstar::computeShortestPath() {
   vector<state> s;
   vector<state>::iterator i;
 
-  if (openList.empty()) return 1;
+  if(openList.empty()) return 1;
 
   int k=0;
-  while ((!openList.empty()) && 
-         (openList.top() < (s_start = calculateKey(s_start))) || 
+  while(((!openList.empty()) && 
+         (openList.top() < (s_start = calculateKey(s_start)))) || 
          (getRHS(s_start) != getG(s_start))) {
 
-    if (k++ > maxSteps) {
+    if(k++ > maxSteps) {
       fprintf(stderr, "At maxsteps\n");
       return -1;
     }
@@ -341,12 +341,12 @@ int Dstar::computeShortestPath() {
     
     // lazy remove
     while(1) { 
-      if (openList.empty()) return 1;
+      if(openList.empty()) return 1;
       u = openList.top();
       openList.pop();
       
-      if (!isValid(u)) continue;
-      if (!(u < s_start) && (!test)) return 2;
+      if(!isValid(u)) continue;
+      if(!(u < s_start) && (!test)) return 2;
       break;
     }
     
@@ -355,18 +355,18 @@ int Dstar::computeShortestPath() {
 
     state k_old = u;
 
-    if (k_old < calculateKey(u)) { // u is out of date
+    if(k_old < calculateKey(u)) { // u is out of date
       insert(u);
-    } else if (getG(u) > getRHS(u)) { // needs update (got better)
-      setG(u,getRHS(u));
-      getPred(u,s);
-      for (i=s.begin();i != s.end(); i++) {
+    } else if(getG(u) > getRHS(u)) { // needs update (got better)
+      setG(u, getRHS(u));
+      getPred(u, s);
+      for(i = s.begin(); i != s.end(); i++) {
         updateVertex(*i);
       }
     } else {   // g <= rhs, state has got worse
-      setG(u,INFINITY);
-      getPred(u,s);
-      for (i=s.begin();i != s.end(); i++) {
+      setG(u, INFINITY);
+      getPred(u, s);
+      for(i = s.begin(); i != s.end(); i++) {
         updateVertex(*i);
       }
       updateVertex(u);
@@ -381,8 +381,8 @@ int Dstar::computeShortestPath() {
  */
 bool Dstar::close(double x, double y) {
     
-  if (isinf(x) && isinf(y)) return true;
-  return (fabs(x-y) < 0.00001);
+  if(isinf(x) && isinf(y)) return true;
+  return(fabs(x-y) < 0.00001);
   
 }
 
@@ -395,19 +395,19 @@ void Dstar::updateVertex(state u) {
   vector<state> s;
   vector<state>::iterator i;
  
-  if (u != s_goal) {
+  if(u != s_goal) {
     getSucc(u, s);
     double tmp = INFINITY;
     double tmp2;
 
-    for (i=s.begin();i != s.end(); i++) {
+    for(i = s.begin(); i != s.end(); i++) {
       tmp2 = getG(*i) + cost(u,*i);
-      if (tmp2 < tmp) tmp = tmp2;
+      if(tmp2 < tmp) tmp = tmp2;
     }
-    if (!close(getRHS(u),tmp)) setRHS(u,tmp);
+    if(!close(getRHS(u), tmp)) setRHS(u, tmp);
   }
 
-  if (!close(getG(u),getRHS(u))) insert(u);
+  if(!close(getG(u), getRHS(u))) insert(u);
   
 }
 
@@ -427,7 +427,7 @@ void Dstar::insert(state u) {
   // uncommented except it introduces a bug, I suspect that there is a
   // bug somewhere else and having duplicates in the openList queue
   // hides the problem...
-  //if ((cur != openHash.end()) && (close(csum,cur->second))) return;
+  //if((cur != openHash.end()) && (close(csum, cur->second))) return;
   
   openHash[u] = csum;
   openList.push(u);
@@ -441,7 +441,7 @@ void Dstar::insert(state u) {
 void Dstar::remove(state u) {
   
   ds_oh::iterator cur = openHash.find(u);
-  if (cur == openHash.end()) return;
+  if(cur == openHash.end()) return;
   openHash.erase(cur);
 }
 
@@ -464,7 +464,7 @@ double Dstar::trueDist(state a, state b) {
  * scaled by a constant C1 (should be set to <= min cost).
  */
 double Dstar::heuristic(state a, state b) {
-  return eightCondist(a,b)*C1;
+  return eightCondist(a, b)*C1;
 }
 
 /* state Dstar::calculateKey(state u)
@@ -473,9 +473,9 @@ double Dstar::heuristic(state a, state b) {
  */
 state Dstar::calculateKey(state u) {
   
-  double val = fmin(getRHS(u),getG(u));
+  double val = fmin(getRHS(u), getG(u));
   
-  u.k.first  = val + heuristic(u,s_start) + k_m;
+  u.k.first  = val + heuristic(u, s_start) + k_m;
   u.k.second = val;
 
   return u;
@@ -494,9 +494,9 @@ double Dstar::cost(state a, state b) {
   int yd = abs(a.y-b.y);
   double scale = 1;
 
-  if (xd+yd>1) scale = M_SQRT2;
+  if(xd+yd>1) scale = M_SQRT2;
 
-  if (cellHash.count(a) == 0) return scale*C1;
+  if(cellHash.count(a) == 0) return scale*C1;
   return scale*cellHash[a].cost;
 
 }
@@ -506,12 +506,12 @@ double Dstar::cost(state a, state b) {
  */
 void Dstar::updateCell(int x, int y, double val) {
   
-   state u;
+  state u;
   
   u.x = x;
   u.y = y;
 
-  if ((u == s_start) || (u == s_goal)) return;
+  if((u == s_start) || (u == s_goal)) return;
 
   makeNewCell(u); 
   cellHash[u].cost = val;
@@ -519,7 +519,7 @@ void Dstar::updateCell(int x, int y, double val) {
   updateVertex(u);
 }
 
-/* void Dstar::getSucc(state u,vector<state> &s)
+/* void Dstar::getSucc(state u, vector<state> &s)
  * --------------------------
  * Returns a list of successor states for state u, since this is an
  * 8-way graph this list contains all of a cells neighbours. Unless
@@ -531,7 +531,7 @@ void Dstar::getSucc(state u, vector<state> &s) {
   u.k.first  = -1;
   u.k.second = -1;
 
-  if (occupied(u)) return;
+  if(occupied(u)) return;
 
   u.x += 1;
   s.insert(s.begin(), u);
@@ -552,7 +552,7 @@ void Dstar::getSucc(state u, vector<state> &s) {
 
 }
 
-/* void Dstar::getPred(state u,vector<state> &s)
+/* void Dstar::getPred(state u, vector<state> &s)
  * --------------------------
  * Returns a list of all the predecessor states for state u. Since
  * this is for an 8-way connected graph the list contails all the
@@ -566,21 +566,21 @@ void Dstar::getPred(state u, vector<state> &s) {
   u.k.second = -1;
 
   u.x += 1;
-  if (!occupied(u)) s.insert(s.begin(), u);
+  if(!occupied(u)) s.insert(s.begin(), u);
   u.y += 1;
-  if (!occupied(u)) s.insert(s.begin(), u);
+  if(!occupied(u)) s.insert(s.begin(), u);
   u.x -= 1;
-  if (!occupied(u)) s.insert(s.begin(), u);
+  if(!occupied(u)) s.insert(s.begin(), u);
   u.x -= 1;
-  if (!occupied(u)) s.insert(s.begin(), u);
+  if(!occupied(u)) s.insert(s.begin(), u);
   u.y -= 1;
-  if (!occupied(u)) s.insert(s.begin(), u);
+  if(!occupied(u)) s.insert(s.begin(), u);
   u.y -= 1;
-  if (!occupied(u)) s.insert(s.begin(), u);
+  if(!occupied(u)) s.insert(s.begin(), u);
   u.x += 1;
-  if (!occupied(u)) s.insert(s.begin(), u);
+  if(!occupied(u)) s.insert(s.begin(), u);
   u.x += 1;
-  if (!occupied(u)) s.insert(s.begin(), u);
+  if(!occupied(u)) s.insert(s.begin(), u);
   
 }
 
@@ -593,7 +593,7 @@ void Dstar::updateStart(int x, int y) {
   s_start.x = x;
   s_start.y = y;
   
-  k_m += heuristic(s_last,s_start);
+  k_m += heuristic(s_last, s_start);
 
   s_start = calculateKey(s_start);
   s_last  = s_start;
@@ -617,8 +617,8 @@ void Dstar::updateGoal(int x, int y) {
   ds_ch::iterator i;
   list< pair<ipoint2, double> >::iterator kk;
   
-  for(i=cellHash.begin(); i!=cellHash.end(); i++) {
-    if (!close(i->second.cost, C1)) {
+  for(i = cellHash.begin(); i != cellHash.end(); i++) {
+    if(!close(i->second.cost, C1)) {
       tp.first.x = i->first.x;
       tp.first.y = i->first.y;
       tp.second = i->second.cost;
@@ -643,14 +643,14 @@ void Dstar::updateGoal(int x, int y) {
 
   cellHash[s_goal] = tmp;
 
-  tmp.g = tmp.rhs = heuristic(s_start,s_goal);
+  tmp.g = tmp.rhs = heuristic(s_start, s_goal);
   tmp.cost = C1;
   cellHash[s_start] = tmp;
   s_start = calculateKey(s_start);
 
   s_last = s_start;    
 
-  for (kk=toAdd.begin(); kk != toAdd.end(); kk++) {
+  for(kk = toAdd.begin(); kk != toAdd.end(); kk++) {
     updateCell(kk->first.x, kk->first.y, kk->second);
   }
   
@@ -664,15 +664,15 @@ void Dstar::updateGoal(int x, int y) {
  * computed by doing a greedy search over the cost+g values in each
  * cells. In order to get around the problem of the robot taking a
  * path that is near a 45 degree angle to goal we break ties based on
- *  the metric euclidean(state, goal) + euclidean(state,start). 
+ *  the metric euclidean(state, goal) + euclidean(state, start). 
  */
 bool Dstar::replan() {
 
   path->clear();
 
   int res = computeShortestPath();
-  //printf("res: %d ols: %d ohs: %d tk: [%f %f] sk: [%f %f] sgr: (%f,%f)\n",res,openList.size(),openHash.size(),openList.top().k.first,openList.top().k.second, s_start.k.first, s_start.k.second,getRHS(s_start),getG(s_start));
-  if (res < 0) {
+  //printf("res: %d ols: %d ohs: %d tk: [%f %f] sk: [%f %f] sgr: (%f,%f)\n", res, openList.size(), openHash.size(), openList.top().k.first, openList.top().k.second, s_start.k.first, s_start.k.second, getRHS(s_start), getG(s_start));
+  if(res < 0) {
     fprintf(stderr, "NO PATH TO GOAL\n");
     return false;
   }
@@ -681,7 +681,7 @@ bool Dstar::replan() {
 
   state cur = s_start; 
 
-  if (isinf(getG(s_start))) {
+  if(isinf(getG(s_start))) {
     fprintf(stderr, "NO PATH TO GOAL\n");
     return false;
   }
@@ -691,29 +691,29 @@ bool Dstar::replan() {
     path->push_back(cur);
     getSucc(cur, n);
 
-    if (n.empty()) {
+    if(n.empty()) {
       fprintf(stderr, "NO PATH TO GOAL\n");
       return false;
     }
 
     double cmin = INFINITY;
     double tmin = INFINITY;
-    state smin;
+    state smin = {0, 0, pair<double, double>(0, 0)};
     
-    for (i=n.begin(); i!=n.end(); i++) {
+    for(i = n.begin(); i != n.end(); i++) {
   
-      //if (occupied(*i)) continue;
+      //if(occupied(*i)) continue;
       double val  = cost(cur,*i);
-      double val2 = trueDist(*i,s_goal) + trueDist(s_start,*i); // (Euclidean) cost to goal + cost to pred
+      double val2 = trueDist(*i, s_goal) + trueDist(s_start,*i); // (Euclidean) cost to goal + cost to pred
       val += getG(*i);
 
-      if (close(val,cmin)) {
-        if (tmin > val2) {
+      if(close(val, cmin)) {
+        if(tmin > val2) {
           tmin = val2;
           cmin = val;
           smin = *i;
         }
-      } else if (val < cmin) {
+      } else if(val < cmin) {
         tmin = val2;
         cmin = val;
         smin = *i;
@@ -737,20 +737,20 @@ bool Dstar::replan() {
 //   vector<state>::iterator iter2;
   
 //   glBegin(GL_QUADS);
-//   for(iter=cellHash.begin(); iter != cellHash.end(); iter++) {
-//     if (iter->second.cost == 1) glColor3f(0,1,0);
-//     else if (iter->second.cost < 0 ) glColor3f(1,0,0);
-//     else glColor3f(0,0,1);
-//     drawCell(iter->first,0.45);
+//   for(iter = cellHash.begin(); iter != cellHash.end(); iter++) {
+//     if(iter->second.cost == 1) glColor3f(0, 1, 0);
+//     else if(iter->second.cost < 0 ) glColor3f(1, 0, 0);
+//     else glColor3f(0, 0, 1);
+//     drawCell(iter->first, 0.45);
 //   }
 
-//   glColor3f(1,1,0);
-//   drawCell(s_start,0.45);
-//   glColor3f(1,0,1);
-//   drawCell(s_goal,0.45);
+//   glColor3f(1, 1, 0);
+//   drawCell(s_start, 0.45);
+//   glColor3f(1, 0, 1);
+//   drawCell(s_goal, 0.45);
 
 //   for(iter1=openHash.begin(); iter1 != openHash.end(); iter1++) {
-//     glColor3f(0.4,0,0.8);
+//     glColor3f(0.4, 0, 0.8);
 //     drawCell(iter1->first, 0.2);
 //   }
 
