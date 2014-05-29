@@ -85,12 +85,12 @@ class Dstar {
   // void   draw();
   // void   drawCell(state s,float z);
 
-  vector<state>* getPath();
+  vector<state> getPath();
   //vector<state> getPathReduced();
-  static vector<state>* properRDP(vector<state>* points, double epsilon);
+  static vector<state> properRDP(vector<state> points, double epsilon);
   
  private:
-  vector<state>* path;
+  vector<state> path;
 
   double C1;
   double k_m;
