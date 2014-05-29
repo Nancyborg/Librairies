@@ -5,8 +5,8 @@
 #ifndef DSTAR_H
 #define DSTAR_H
 
-#include <cmath>
-// #include <math.h>
+// #include <cmath>
+#include <math.h>
 #include <stack>
 #include <queue>
 #include <list>

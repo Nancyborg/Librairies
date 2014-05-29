@@ -4,10 +4,10 @@
 
 #include "Dstar.h"
 #include <stdio.h>
-#include <cmath>
-// #include <math.h>
+// #include <cmath>
+#include <math.h>
 
-#define M_SQRT2 1.41421356237309504880
+// #define M_SQRT2 1.41421356237309504880
 
 // #ifdef USE_OPEN_GL
 // #ifdef MACOS
@@ -18,7 +18,7 @@
 // #endif
 
 int main(void) {
-  printf("Hello World! You all lose!");
+  printf("Hello World! You all lose!\n");
   Dstar* pf = new Dstar();
 
   pf->init(18, 18, 180, 180);
