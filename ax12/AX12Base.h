@@ -258,14 +258,9 @@ class AX12Base {
         void setCurrentID(uint8_t new_id) { id = new_id; }
 
         /**
-         * \brief Set the baudd rate of the AX12 we want to send messages to. This does not send anything to the AX12.
-         *
-         * If the special address \ref AX12_BROADCAST is used, every connected AX12 will interpret sent messages but no status packet will be sent.
+         * \brief Set the baud rate of the AX12 we want to send messages to. This does not send anything to the AX12.
          */
-        void setCurrentBaud(uint8_t new_baud) {
-            baud = new_baud;
-            timeout = 20e6 / baud;
-        }
+        void setCurrentBaud(int new_baud) { baud = new_baud; }
 
         /**
          * \brief Check if the AX12 is moving
@@ -345,14 +340,17 @@ class AX12Base {
         }
     protected:
         /**
-         * \brief Construct a new AX12 with the specified \a id and \a baud rate.
+         * \brief Construct a new AX12 with the specified \a id, \a baud rate and \a timeout.
+         * \param id ID of the AX12 (or AX12_BROADCAST)
+         * \param baud baudrate of the serial port
+         * \param timeout timeout in microseconds
          */
-        AX12Base(int id, int baud = 1000000);
+        AX12Base(int id, int baud = 1000000, int timeout = 1000);
         /**
          * \brief Read \a len bytes from the AX12 serial bus.
          * \param buffer the byte array to store the received bytes into
          * \param len the number of bytes to read
-         * \param timeout the maximum time to wait for a reply before aborting, or -1 to wait indefinitely.
+         * \param timeout the maximum time (in microseconds) to wait for a reply before aborting, or -1 to wait indefinitely.
          * \remarks This method must be implemented by subclasses. If an error occurs, the implementation must return -1 and comm_error should be set.
          * \return the number of bytes read or -1 if an error occured
          */
@@ -386,7 +384,6 @@ class AX12Base {
         virtual void flushInput() = 0;
 
         void setCommError(int comm_error);
-        int timeout;
 
     private:
         uint8_t checksum(uint8_t data[], uint8_t len);
@@ -396,6 +393,7 @@ class AX12Base {
         int id;
         int baud;
         int comm_error;
+        int timeout;
         bool debugOn;
 };
 

@@ -35,20 +35,24 @@ private:
     int readBytes(uint8_t *bytes, int n, int timeout) {
         Timer timer;
         timer.start();
+        debug("readBytes(n=%d, timeout=%d)\n", n, timeout);
 
         for (int i = 0; i < n; i++) {
             if (timeout >= 0) {
-                while (!ax12.readable() && timer.read_us() <= timeout)
-                    ;
+                while (!ax12.readable() && timer.read_us() <= timeout) {
+                    debug("wait (%d/%d)...", timer.read_us(), timeout);
+                }
 
                 if (!ax12.readable()) {
-                    printf("got timeout (%d >= %d)\n", timer.read_us(),  timeout);
+                    debug("got timeout (%d >= %d)\n", timer.read_us(),  timeout);
                     setCommError(AX12_COMM_ERROR_TIMEOUT);
                     return -1;
                 }
             }
             bytes[i] = ax12.getc();
         }
+
+        debug("elapsed: %d\n", timer.read_us());
 
         return n;
     }

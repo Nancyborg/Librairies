@@ -4,10 +4,8 @@
 
 #include "AX12Base.h"
 
-static void dumpHex(const uint8_t *buffer, int len);
-
-AX12Base::AX12Base(int id, int baud /* = 1000000 */)
-    : debugOn(false)
+AX12Base::AX12Base(int id, int baud /* = 1000000 */, int timeout /* = 1000 */)
+    : timeout(timeout), debugOn(false)
 {
     setCurrentID(id);
     setCurrentBaud(baud);
@@ -44,6 +42,7 @@ bool AX12Base::changeBaud(int new_baud) {
 
     return ret;
 }
+
 float AX12Base::getPresentPosition() {
     int ret = readRegister2(AX12_RAM_PRESENT_POSITION);
     if (ret < 0)
@@ -140,7 +139,6 @@ bool AX12Base::writePacket(uint8_t instr, uint8_t len, uint8_t data[]) {
     uint8_t send_packet[6 + len];
     bool ret = false;
 
-
     beginComm();
     setCommError(AX12_COMM_ERROR_NONE);
     flushInput();
@@ -182,7 +180,7 @@ bool AX12Base::readPacket() {
     uint8_t cksum1, cksum2;
     int len = 0;
 
-    if (readBytes(recv_packet, 4, timeout) < 4)
+    if (readBytes(recv_packet, 4, 5000) < 4)
         goto end;
 
     if (recv_packet[0] != 0xFF || recv_packet[1] != 0xFF) {
