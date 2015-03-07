@@ -10,13 +10,15 @@
 
 #include "mbed.h"
 #include "AX12Base.h"
+#include "SerialHalfDuplex.h"
 
 #ifndef AX12
-#define AX12 AX12Mbed
+#define AX12 AX12Mbed<SerialHalfDuplex>
 #endif
 
 /** \brief MBED implementation if AX12Base
  */
+template <class SerialType=Serial>
 class AX12Mbed : public AX12Base {
 public:
     AX12Mbed(PinName tx, PinName rx, int id, int baud = 1000000)
@@ -69,7 +71,7 @@ private:
             ax12.getc();
     }
 
-    Serial ax12;
+    SerialType ax12;
 };
 
 #endif
