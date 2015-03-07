@@ -5,7 +5,7 @@
 
 Serial pc(USBTX, USBRX);
 
-int baud = 1000000, id = 1;
+int baud = 115200, id = 1;
 
 char *readAll(Serial& s) {
     static char buff[64];
@@ -18,13 +18,13 @@ char *readAll(Serial& s) {
 }
 
 void setBaudRate() {
-    printf("Baud:\n");
+    printf("Set baud rate: ");
     scanf("%d", &baud);
     printf("Baud rate changed to %d\n", baud);
 }
 
 void setID() {
-    printf("ID (-1 for broadcast):\n");
+    printf("Set ID (-1 for broadcast): ");
     scanf("%d", &id);
     if (id == -1)
         id = AX12::AX12_BROADCAST;
@@ -32,42 +32,34 @@ void setID() {
     printf("ID rate changed to %d\n", id);
 }
 
-void baudRateScan(void) {
-    AX12 ax(PIN_TX, PIN_RX, id, baud);
+void scan(void) {
     int bauds[] = { 1000000,  500000, 400000, 250000, 200000, 115200, 57600, 19200, 9600 };
+    AX12 ax(PIN_TX, PIN_RX, id, baud);
 
+    printf("Scanning...\n");
     for (size_t i = 0; i < (sizeof(bauds) / sizeof(*bauds)); i++) {
-        printf("Scan: %d\n", bauds[i]);
-
         ax.setCurrentBaud(bauds[i]);
 
-        if (ax.ping()) {
-            printf("**** Found AX12 for baudrate %d\n", bauds[i]);
+        for (int j = 0; j < 0xFE; j++) {
+            ax.setCurrentID(j);
+
+            printf("Scanning ID %d,  baud = %-10d\r", j, bauds[i]);
+
+            if (ax.ping()) {
+                printf("Found AX12 with ID = %d and baudrate = %d\n", j, bauds[i]);
+            }
         }
     }
-
-    printf("End of scan\n");
-}
-
-void idScan(void) {
-    AX12 ax(PIN_TX, PIN_RX, id, baud);
-    for (int i = 1; i < 0xFF; i++) {
-        printf("Scan ID: %d\n", i);
-        ax.setCurrentID(i);
-
-        if (ax.ping()) {
-            printf("**** Found AX12 for id %d\n", i);
-        }
-    }
+    printf("Scanning finished.%-15s\n", "");
 }
 
 void pingTest() {
     AX12 ax(PIN_TX, PIN_RX, id, baud);
 
     if (ax.ping()) {
-        printf("Successful\n");
+        printf("Ping successful.\n");
     } else {
-        printf("Error\n");
+        printf("Ping failed.\n");
     }
 }
 
@@ -77,9 +69,9 @@ void moveTest() {
     printf("Angle:\n");
     scanf("%f", &angle);
     if (ax.setGoalPosition(angle)) {
-        printf("Successful\n");
+        printf("Move successful.\n");
     } else {
-        printf("Error\n");
+        printf("Move failed.\n");
     }
 }
 
@@ -90,10 +82,10 @@ void idChange(void) {
     scanf("%d", &newid);
 
     if (ax.changeID(newid)) {
-        printf("Success\n");
+        printf("ID successfully changed to %d\n", newid);
         id = newid;
     } else {
-        printf("Error\n");
+        printf("ID change failed.\n");
     }
 }
 
@@ -105,10 +97,10 @@ void baudRateChange(void) {
     printf("new baud: %d\n", newbaud);
 
     if (ax.changeBaud(newbaud)) {
-        printf("Success\n");
+        printf("Baudrate successfully changed to %d\n", newbaud);
         baud = newbaud;
     } else {
-        printf("Error\n");
+        printf("Baudrate change failed.\n");
     }
 }
 
@@ -130,26 +122,32 @@ void clearEEPROM(void) {
 }
 
 int main(void) {
+    bool showMenu = true;
     pc.baud(115200);
 
     for (;;) {
-        printf("----- AX12 tool -----\n");
+        if (showMenu) {
+            printf("----- AX12 tool -----\n");
 
-        printf("-- Communication settings --\n");
-        printf("1. Set baud rate\n");
-        printf("2. Set ID\n");
-        printf("-- Actions --\n");
-        printf("3. Baud rate scan\n");
-        printf("4. ID scan\n");
-        printf("5. Ping test\n");
-        printf("6. Move test\n");
-        printf("7. Change ID\n");
-        printf("8. Change baud rate\n");
-        printf("9. Clear eeprom using bootloader\n");
+            printf("-- Communication settings --\n");
+            printf("1. Set baud rate (current: %d)\n", baud);
+            printf("2. Set ID (current: %d)\n\n", id);
+            printf("-- Actions --\n");
+            printf("3. Scan every baud/ID combination\n");
+            printf("4. Ping test\n");
+            printf("5. Move test\n");
+            printf("6. Change ID\n");
+            printf("6. Change baud rate\n");
+            printf("8. Clear eeprom using bootloader\n");
 
-        printf("Choice : \n");
+            showMenu = false;
+        }
 
-        switch (getchar()) {
+        printf("Choice : ");
+        int choice = getchar();
+        printf("\n");
+
+        switch (choice) {
             case '1':
                 setBaudRate();
                 break;
@@ -157,27 +155,25 @@ int main(void) {
                 setID();
                 break;
             case '3':
-                baudRateScan();
+                scan();
                 break;
             case '4':
-                idScan();
-                break;
-            case '5':
                 pingTest();
                 break;
-            case '6':
+            case '5':
                 moveTest();
                 break;
-            case '7':
+            case '6':
                 idChange();
                 break;
-            case '8':
+            case '7':
                 baudRateChange();
                 break;
-            case '9':
+            case '8':
                 clearEEPROM();
                 break;
             default:
+                showMenu = true;
                 break;
         }
         while (pc.readable())
