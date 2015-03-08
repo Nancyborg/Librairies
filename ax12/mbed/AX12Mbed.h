@@ -12,9 +12,6 @@
 #include "AX12Base.h"
 #include "SerialHalfDuplex.h"
 
-#ifndef AX12
-#define AX12 AX12Mbed<SerialHalfDuplex>
-#endif
 
 /** \brief MBED implementation if AX12Base
  */
@@ -73,5 +70,7 @@ private:
 
     SerialType ax12;
 };
+
+typedef AX12Mbed<SerialHalfDuplex> AX12;
 
 #endif

@@ -1272,21 +1272,15 @@ SWIGEXPORT void JNICALL Java_fr_nancyborg_ax12_AX12JNI_AX12Base_1setCurrentID(JN
 }
 
 
-SWIGEXPORT void JNICALL Java_fr_nancyborg_ax12_AX12JNI_AX12Base_1setCurrentBaud(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
+SWIGEXPORT void JNICALL Java_fr_nancyborg_ax12_AX12JNI_AX12Base_1setCurrentBaud(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
   AX12Base *arg1 = (AX12Base *) 0 ;
-  uint8_t arg2 ;
-  uint8_t *argp2 ;
+  int arg2 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   arg1 = *(AX12Base **)&jarg1; 
-  argp2 = *(uint8_t **)&jarg2; 
-  if (!argp2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null uint8_t");
-    return ;
-  }
-  arg2 = *argp2; 
+  arg2 = (int)jarg2; 
   (arg1)->setCurrentBaud(arg2);
 }
 

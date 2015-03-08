@@ -21,10 +21,6 @@
 #include <string.h>
 #include <pthread.h>
 
-#ifndef AX12
-#define AX12 AX12Linux
-#endif
-
 #define ERROR(what)                          \
     do {                                     \
         perror("AX12: " what);               \
@@ -61,8 +57,6 @@ public:
         cfmakeraw(&newtio);
         newtio.c_cflag |= (CLOCAL | CREAD);
         tcsetattr(fd, TCSANOW, &newtio);
-
-        timeout = 999;
     }
 
     ~AX12Linux() {
@@ -160,7 +154,7 @@ private:
     }
 
     void flushInput() {
-        tcflush(fd,TCIOFLUSH);
+        tcflush(fd, TCIOFLUSH);
     }
 
     int fd;
@@ -169,6 +163,7 @@ private:
     pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 };
 
+typedef AX12Linux AX12;
 #undef ERROR
 #endif
 

@@ -86,7 +86,7 @@ class AX12JNI {
   public final static native boolean AX12Base_changeID(long jarg1, AX12Base jarg1_, long jarg2);
   public final static native boolean AX12Base_changeBaud(long jarg1, AX12Base jarg1_, int jarg2);
   public final static native void AX12Base_setCurrentID(long jarg1, AX12Base jarg1_, long jarg2);
-  public final static native void AX12Base_setCurrentBaud(long jarg1, AX12Base jarg1_, long jarg2);
+  public final static native void AX12Base_setCurrentBaud(long jarg1, AX12Base jarg1_, int jarg2);
   public final static native boolean AX12Base_isMoving(long jarg1, AX12Base jarg1_);
   public final static native long AX12Base_getData(long jarg1, AX12Base jarg1_);
   public final static native long AX12Base_getDataSize(long jarg1, AX12Base jarg1_);

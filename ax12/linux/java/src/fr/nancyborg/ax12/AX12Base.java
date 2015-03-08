@@ -115,8 +115,8 @@ public class AX12Base {
     AX12JNI.AX12Base_setCurrentID(swigCPtr, this, SWIGTYPE_p_uint8_t.getCPtr(new_id));
   }
 
-  public void setCurrentBaud(SWIGTYPE_p_uint8_t new_baud) {
-    AX12JNI.AX12Base_setCurrentBaud(swigCPtr, this, SWIGTYPE_p_uint8_t.getCPtr(new_baud));
+  public void setCurrentBaud(int new_baud) {
+    AX12JNI.AX12Base_setCurrentBaud(swigCPtr, this, new_baud);
   }
 
   public boolean isMoving() {
