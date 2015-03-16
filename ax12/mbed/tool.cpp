@@ -68,6 +68,8 @@ void moveTest() {
     float angle;
     printf("Angle:\n");
     scanf("%f", &angle);
+    //ax.setGoalSpeed(0);
+
     if (ax.setGoalPosition(angle)) {
         printf("Move successful.\n");
     } else {
@@ -87,6 +89,18 @@ void idChange(void) {
     } else {
         printf("ID change failed.\n");
     }
+}
+
+void setLimits() {
+    AX12 ax(PIN_TX, PIN_RX, id, baud);
+    float newlimit;
+
+    printf("Lower (CW) limit [current=%f]: ", ax.getCWLimit());
+    scanf("%f", &newlimit);
+    ax.setCWLimit(newlimit);
+    printf("Upper (CCW) limit [current=%f]: ", ax.getCCWLimit());
+    scanf("%f", &newlimit);
+    ax.setCCWLimit(newlimit);
 }
 
 void baudRateChange(void) {
@@ -136,9 +150,10 @@ int main(void) {
             printf("3. Scan every baud/ID combination\n");
             printf("4. Ping test\n");
             printf("5. Move test\n");
-            printf("6. Change ID\n");
-            printf("6. Change baud rate\n");
-            printf("8. Clear eeprom using bootloader\n");
+            printf("6. Set angle limits\n");
+            printf("7. Change ID\n");
+            printf("8. Change baud rate\n");
+            printf("9. Clear eeprom using bootloader\n");
 
             showMenu = false;
         }
@@ -164,12 +179,15 @@ int main(void) {
                 moveTest();
                 break;
             case '6':
-                idChange();
+                setLimits();
                 break;
             case '7':
-                baudRateChange();
+                idChange();
                 break;
             case '8':
+                baudRateChange();
+                break;
+            case '9':
                 clearEEPROM();
                 break;
             default:

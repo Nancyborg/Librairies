@@ -71,6 +71,6 @@ private:
     SerialType ax12;
 };
 
-typedef AX12Mbed<SerialHalfDuplex> AX12;
+typedef AX12Mbed<Serial> AX12;
 
 #endif

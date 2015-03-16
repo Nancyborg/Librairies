@@ -214,12 +214,24 @@ class AX12Base {
         bool setGoalSpeed(float speed);
 
         /**
+         * \brief Get the clockwise angle limit (lower limit).
+         * \return the lower angle limit (0 - 300), or a negative value if a communication error occured
+         */
+        float getCWLimit();
+
+        /**
          * \brief Set the clockwise angle limit (lower limit).
          * \remarks This value is stored in the EEPROM and is therefore non-volatile.
          * \param angle the lower angle limit (0 - 300)
          * \return \a true if no communication error occured, \a false otherwise
          */
         bool setCWLimit(float angle);
+
+        /**
+         * \brief Get the counter-clockwise angle limit (upper limit).
+         * \return the upper angle limit (0 - 300), or a negative value if a communication error occured
+         */
+        float getCCWLimit();
 
         /**
          * \brief Set the counter-clockwise angle limit (upper limit).

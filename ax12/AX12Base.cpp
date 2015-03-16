@@ -79,6 +79,22 @@ bool AX12Base::setCWLimit(float angle) {
     return writeRegister2(AX12_ROM_CW_ANGLE_LIMIT, degToRegVal(angle));
 }
 
+float AX12Base::getCWLimit() {
+    int ret = readRegister2(AX12_ROM_CW_ANGLE_LIMIT);
+    if (ret < 0) {
+        return -42;
+    }
+    return regValToDeg(ret);
+}
+
+float AX12Base::getCCWLimit() {
+    int ret = readRegister2(AX12_ROM_CCW_ANGLE_LIMIT);
+    if (ret < 0) {
+        return -42;
+    }
+    return regValToDeg(ret);
+}
+
 bool AX12Base::setCCWLimit(float angle) {
     return writeRegister2(AX12_ROM_CCW_ANGLE_LIMIT, degToRegVal(angle));
 }
