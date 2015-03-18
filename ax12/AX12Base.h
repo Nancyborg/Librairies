@@ -208,10 +208,24 @@ class AX12Base {
 
         /**
          * \brief Set the goal speed of the AX12.
-         * \param speed the angle in degrees (0 - 300)
+         * \remarks Need lower and upper angle limit to 0
+         * \param speed from -1 to 1
          * \return \a true if no communication error occured, \a false otherwise
          */
         bool setGoalSpeed(float speed);
+
+
+        /**
+         * \brief Set the AX12 in rotational mode
+         * \return \a true if no communication error occured, \a false otherwise
+         */
+        bool setRotationalMode();
+
+        /**
+         * \brief Set the AX12 in rotational mode
+         * \return \a true if no communication error occured, \a false otherwise
+         */
+        bool setPositionalMode();
 
         /**
          * \brief Get the clockwise angle limit (lower limit).

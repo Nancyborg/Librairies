@@ -99,6 +99,18 @@ bool AX12Base::setCCWLimit(float angle) {
     return writeRegister2(AX12_ROM_CCW_ANGLE_LIMIT, degToRegVal(angle));
 }
 
+bool AX12Base::setRotationalMode() {
+    if(!setCCWLimit(0.))
+        return false;
+    return setCWLimit(0.);
+}
+
+bool AX12Base::setPositionalMode() {
+    if(!setCCWLimit(300.))
+        return false;
+    return setCWLimit(0.);
+}
+
 bool AX12Base::setTorqueEnable(bool enable) {
     return writeRegister1(AX12_RAM_TORQUE_ENABLE, enable);
 }
