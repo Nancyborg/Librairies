@@ -18,6 +18,13 @@
 template <class SerialType=Serial>
 class AX12Mbed : public AX12Base {
 public:
+    /**
+     * \brief Construct a new AX12
+     * \param tx Serial transmit (TX) pin
+     * \param rx Serial receive (RX) pin
+     * \param id ID of the AX12 (or AX12_BROADCAST)
+     * \param baud baudrate of the serial port
+     */
     AX12Mbed(PinName tx, PinName rx, int id, int baud = 1000000)
         : AX12Base(id, baud), ax12(tx, rx)
     {
@@ -71,6 +78,8 @@ private:
     SerialType ax12;
 };
 
+/** \brief Alias for AX12Mbed<Serial>
+ */
 typedef AX12Mbed<Serial> AX12;
 
 #endif

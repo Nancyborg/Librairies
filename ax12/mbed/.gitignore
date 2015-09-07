@@ -1,4 +1,5 @@
 LPC176x/
+LPC1768/
 *.hex
 *.elf
 *.bin

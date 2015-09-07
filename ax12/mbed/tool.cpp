@@ -29,7 +29,7 @@ void setID() {
     if (id == -1)
         id = AX12::AX12_BROADCAST;
 
-    printf("ID rate changed to %d\n", id);
+    printf("ID changed to %d\n", id);
 }
 
 void scan(void) {
@@ -121,16 +121,24 @@ void baudRateChange(void) {
 void clearEEPROM(void) {
     Serial axserial(p9, p10);
     axserial.baud(57600);
+
+    printf("This menu can be used to recover an AX12 with unknown or invalid baudrate/id settings.\n\n");
+    printf("It will reset it to its default settings (ID 1, 1Mbaud)\n");
+
+    printf("Power-on the AX12 while pressing # in this terminal.\n");
+    printf("If successful, the red LED will stay lit and you'll see this menu: \n\n");
+
+    printf("L(oad),G(o),S(ystem),A(pplication),R(eset),D(ump),C(lear)\n\n");
+
+    printf("You'll then have to type C to clear the EEPROM, then A and G\n");
+
     for (;;) {
         if (axserial.readable())
             printf("read: %s\n", readAll(axserial));
         if (pc.readable()) {
             int c = pc.getc();
-            printf("write: %c\n", c);
+            //printf("write: %c\n", c);
             axserial.putc(c);
-        } else {
-/*            axserial.putc('#');
-            wait(0.1);*/
         }
     }
 }
@@ -141,20 +149,20 @@ int main(void) {
 
     for (;;) {
         if (showMenu) {
-            printf("----- AX12 tool -----\n");
-
-            printf("-- Communication settings --\n");
-            printf("1. Set baud rate (current: %d)\n", baud);
-            printf("2. Set ID (current: %d)\n\n", id);
-            printf("-- Actions --\n");
-            printf("3. Scan every baud/ID combination\n");
-            printf("4. Ping test\n");
-            printf("5. Move test\n");
-            printf("6. Set angle limits\n");
-            printf("7. Change ID\n");
-            printf("8. Change baud rate\n");
-            printf("9. Clear eeprom using bootloader\n");
-
+            printf("----------------- AX12 tool -----------------\n");
+            printf("---------- [Communication settings] ---------\n");
+            printf("  (to establish communication with an AX12)  \n");
+            printf("---------------------------------------------\n");
+            printf("B: Set baud rate (current: %d)\n", baud);
+            printf("I: Set ID (current: %d)\n\n", id);
+            printf("----------------- [Actions] -----------------\n");
+            printf("s: Scan every baud/ID combination\n");
+            printf("p: Ping test (communication test)\n");
+            printf("m: Move to position\n");
+            printf("l: Set angle limits\n");
+            printf("i: Change ID\n");
+            printf("b: Change baud rate\n");
+            printf("c: Clear eeprom using bootloader\n\n");
             showMenu = false;
         }
 
@@ -163,31 +171,31 @@ int main(void) {
         printf("\n");
 
         switch (choice) {
-            case '1':
+            case 'B':
                 setBaudRate();
                 break;
-            case '2':
+            case 'I':
                 setID();
                 break;
-            case '3':
+            case 's':
                 scan();
                 break;
-            case '4':
+            case 'p':
                 pingTest();
                 break;
-            case '5':
+            case 'm':
                 moveTest();
                 break;
-            case '6':
+            case 'l':
                 setLimits();
                 break;
-            case '7':
+            case 'i':
                 idChange();
                 break;
-            case '8':
+            case 'b':
                 baudRateChange();
                 break;
-            case '9':
+            case 'c':
                 clearEEPROM();
                 break;
             default:
