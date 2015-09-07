@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['degtoregval',['degToRegVal',['../classAX12Base.html#a6c285b0f40962a222bc9430b0ec949fb',1,'AX12Base']]]
+  ['changebaud',['changeBaud',['../classAX12Base.html#a64aef094e553b21786c4164668ec2502',1,'AX12Base']]],
+  ['changeid',['changeID',['../classAX12Base.html#a5a896370451eae22e48093a47dff254b',1,'AX12Base']]]
 ];

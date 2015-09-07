@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['changebaud',['changeBaud',['../classAX12Base.html#a64aef094e553b21786c4164668ec2502',1,'AX12Base']]],
-  ['changeid',['changeID',['../classAX12Base.html#a5a896370451eae22e48093a47dff254b',1,'AX12Base']]]
+  ['begincomm',['beginComm',['../classAX12Base.html#aa01f8589ce122883ec26b64f3043d0fe',1,'AX12Base']]]
 ];

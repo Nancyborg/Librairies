@@ -1,0 +1,8 @@
+/**
+\mainpage
+
+This library allows one to interact with a Dynamixel AX-12 servomotor from Robotis.
+
+It's written in a platform-agnostic way and consists of a base implementation (AX12Base) with versions for Linux (AX12Linux) and <a href="http://mbed.org">mbed</a> (AX12Mbed).
+
+*/

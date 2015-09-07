@@ -287,12 +287,12 @@ class AX12Base {
          *
          * If the special address \ref AX12_BROADCAST is used, every connected AX12 will interpret sent messages but no status packet will be sent.
          */
-        void setCurrentID(uint8_t new_id) { id = new_id; }
+        virtual void setCurrentID(uint8_t new_id) { id = new_id; }
 
         /**
          * \brief Set the baud rate of the AX12 we want to send messages to. This does not send anything to the AX12.
          */
-        void setCurrentBaud(int new_baud) { baud = new_baud; }
+        virtual void setCurrentBaud(int new_baud) { baud = new_baud; }
 
         /**
          * \brief Check if the AX12 is moving
@@ -329,6 +329,10 @@ class AX12Base {
         int getCommError() { return comm_error; }
 
 
+        /**
+         * \brief Enable or disable debug output to the provided debug() function
+         * \sa debug()
+         */
         void setDebug(bool on) {
             debugOn = on;
         }
@@ -342,7 +346,15 @@ class AX12Base {
          */
         bool writePacket(AX12_Instr instr, uint8_t len, uint8_t data[]);
 
+        /**
+         * \brief Write a formatted debug message
+         * \remarks This method can be reimplemented by subclasses to provide custom output. Default is to use stdout.
+         */
         virtual void debug(const char *format, ...);
+
+        /**
+         * \brief Dump an hexadecimal string from the provided data to the debug output
+         */
         virtual void dumpHex(const uint8_t *buffer, int len);
 
         /**

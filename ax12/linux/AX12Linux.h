@@ -1,12 +1,12 @@
 /**
- * \file    AX12Mbed.h
+ * \file    AX12Linux.h
  * \author  Mickaël Thomas
  * \version 1.0
  * \date    16/04/2014
  * \brief   Linux implementation of AX12Base
  */
-#ifndef AX12_MBED_H
-#define AX12_MBED_H
+#ifndef AX12_LINUX_H
+#define AX12_LINUX_H
 
 #include "../AX12Base.h"
 
@@ -32,6 +32,12 @@
  */
 class AX12Linux: public AX12Base {
 public:
+    /**
+     * \brief Construct a new AX12
+     * \param devpath path to serial device (eg /dev/ttyUSB0)
+     * \param id ID of the AX12 (or AX12_BROADCAST)
+     * \param baud baudrate of the serial port
+     */
     AX12Linux(const char *devpath, int id, int baud = 1000000)
         : AX12Base(id, baud)
     {
@@ -163,7 +169,10 @@ private:
     pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 };
 
+/** \brief Alias for AX12Linux
+ */
 typedef AX12Linux AX12;
+
 #undef ERROR
 #endif
 
