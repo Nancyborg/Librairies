@@ -1,16 +1,22 @@
-%module AX12;
-/*%feature("director");
-%feature("nodirector") AX12Base;
-%feature("nodirector") AX12Linux::debug;
-*/
+%module AX12_Module;
 
 %{
 #include "../../AX12Base.h"
 #include "../AX12Linux.h"
 %}
 
-%include "../../AX12Base.h"
-%include "../AX12Linux.h"
+
+%javaconst(1);
+
+%include "inttypes.i"
+%include "arrays_java.i"
+%include "enumsimple.swg"
+
+%rename(AX12) AX12Linux;
+
+%typemap(javaclassmodifiers) AX12Base "class";
+%pragma(java) jniclassclassmodifiers="class";
+%pragma(java) moduleclassmodifiers="class";
 
 %pragma(java) jniclassimports=%{
 import cz.adamh.utils.NativeUtils;
@@ -26,3 +32,6 @@ import java.io.IOException;
         }
     }
 %}
+
+%include "../../AX12Base.h"
+%include "../AX12Linux.h"

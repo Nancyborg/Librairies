@@ -104,25 +104,6 @@ class AX12Base {
         };
 
         /**
-         * \brief Read \a len bytes starting at address \a reg_start
-         * \param reg_start start address
-         * \param len number of bytes to read
-         * \return \a true if no communication error occured, \a false otherwise
-         * \sa getCommError(), getErrors()
-         */
-        bool readData(AX12_Register reg_start, uint8_t len);
-
-        /**
-         * \brief Write \a len bytes starting at address \a reg_start
-         * \param reg_start start address
-         * \param len number of bytes to read
-         * \param data bytes to write
-         * \return \a true if no communication error occured, \a false otherwise
-         * \sa getCommError(), getErrors()
-         */
-        bool writeData(AX12_Register reg_start, uint8_t len, const uint8_t data[]);
-
-        /**
          * \brief Read a one-byte register at address \a reg_start
          * \param reg_start register address
          * \return the 8-bit value read, or -1 if an error occured
@@ -355,7 +336,7 @@ class AX12Base {
         /**
          * \brief Dump an hexadecimal string from the provided data to the debug output
          */
-        virtual void dumpHex(const uint8_t *buffer, int len);
+        virtual void dumpHex(const uint8_t buffer[], int len);
 
         /**
          * \brief Convert an angle value (0-300°) to a raw register value (0-3ff)
@@ -399,7 +380,7 @@ class AX12Base {
          * \return the number of bytes read or -1 if an error occured
          * \sa setCommError()
          */
-        virtual int readBytes(uint8_t *buffer, int len, int timeout) = 0;
+        virtual int readBytes(uint8_t buffer[], int len, int timeout) = 0;
 
         /**
          * \brief Write \a len bytes to the AX12 serial bus.
@@ -409,7 +390,27 @@ class AX12Base {
          * \return the number of bytes written or -1 if an error occured
          * \sa setCommError()
          */
-        virtual int writeBytes(const uint8_t *buffer, int len) = 0;
+        virtual int writeBytes(const uint8_t buffer[], int len) = 0;
+
+        /**
+         * \brief Read \a len bytes starting at address \a reg_start
+         * \param reg_start start address
+         * \param len number of bytes to read
+         * \return \a true if no communication error occured, \a false otherwise
+         * \sa getCommError(), getErrors()
+         */
+        bool readData(AX12_Register reg_start, uint8_t len);
+
+        /**
+         * \brief Write \a len bytes starting at address \a reg_start
+         * \param reg_start start address
+         * \param len number of bytes to read
+         * \param data bytes to write
+         * \return \a true if no communication error occured, \a false otherwise
+         * \sa getCommError(), getErrors()
+         */
+        bool writeData(AX12_Register reg_start, uint8_t len, const uint8_t data[]);
+
 
         /**
          * \brief Called at the beginning of a communication (read + write)

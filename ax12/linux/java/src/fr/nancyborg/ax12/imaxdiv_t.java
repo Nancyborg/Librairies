@@ -8,15 +8,16 @@
 
 package fr.nancyborg.ax12;
 
-public class AX12 extends AX12Base {
+public class imaxdiv_t {
   private transient long swigCPtr;
+  protected transient boolean swigCMemOwn;
 
-  protected AX12(long cPtr, boolean cMemoryOwn) {
-    super(AX12_ModuleJNI.AX12_SWIGUpcast(cPtr), cMemoryOwn);
+  protected imaxdiv_t(long cPtr, boolean cMemoryOwn) {
+    swigCMemOwn = cMemoryOwn;
     swigCPtr = cPtr;
   }
 
-  protected static long getCPtr(AX12 obj) {
+  protected static long getCPtr(imaxdiv_t obj) {
     return (obj == null) ? 0 : obj.swigCPtr;
   }
 
@@ -28,19 +29,30 @@ public class AX12 extends AX12Base {
     if (swigCPtr != 0) {
       if (swigCMemOwn) {
         swigCMemOwn = false;
-        AX12_ModuleJNI.delete_AX12(swigCPtr);
+        AX12_ModuleJNI.delete_imaxdiv_t(swigCPtr);
       }
       swigCPtr = 0;
     }
-    super.delete();
   }
 
-  public int getSysError() {
-    return AX12_ModuleJNI.AX12_getSysError(swigCPtr, this);
+  public void setQuot(long value) {
+    AX12_ModuleJNI.imaxdiv_t_quot_set(swigCPtr, this, value);
   }
 
-  public void setCurrentBaud(int new_baud) {
-    AX12_ModuleJNI.AX12_setCurrentBaud(swigCPtr, this, new_baud);
+  public long getQuot() {
+    return AX12_ModuleJNI.imaxdiv_t_quot_get(swigCPtr, this);
+  }
+
+  public void setRem(long value) {
+    AX12_ModuleJNI.imaxdiv_t_rem_set(swigCPtr, this, value);
+  }
+
+  public long getRem() {
+    return AX12_ModuleJNI.imaxdiv_t_rem_get(swigCPtr, this);
+  }
+
+  public imaxdiv_t() {
+    this(AX12_ModuleJNI.new_imaxdiv_t(), true);
   }
 
 }

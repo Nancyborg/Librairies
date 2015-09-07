@@ -1,0 +1,6 @@
+# Example Makefile.local
+
+# Set the compiler to use for the Raspberry PI here
+
+CXX=/usr/bin/arm-bcm2708-linux-gnueabi/g++
+#CXX=/usr/bin/gcc-linaro-arm-linux-gnueabihf-raspbian/g++
