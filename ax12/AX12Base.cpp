@@ -71,8 +71,8 @@ bool AX12Base::setGoalPosition(float angle, bool block /* = false */) {
     return ret;
 }
 
-bool AX12Base::setGoalSpeed(float speed) {
-    return writeRegister2(AX12_RAM_MOVING_SPEED, floatToRegVal(speed));
+bool AX12Base::setMovingSpeed(float speed) {
+    return writeRegister2(AX12_RAM_MOVING_SPEED, 0x3ff * speed);
 }
 
 bool AX12Base::setCWLimit(float angle) {
@@ -99,16 +99,16 @@ bool AX12Base::setCCWLimit(float angle) {
     return writeRegister2(AX12_ROM_CCW_ANGLE_LIMIT, degToRegVal(angle));
 }
 
-bool AX12Base::setRotationalMode() {
-    if(!setCCWLimit(0.))
+bool AX12Base::setEndlessTurnMode(float speed) {
+    if (!setAngleLimits(0, 0))
         return false;
-    return setCWLimit(0.);
+
+    return writeRegister2(AX12_RAM_MOVING_SPEED, floatToRegVal(speed));
 }
 
-bool AX12Base::setPositionalMode() {
-    if(!setCCWLimit(300.))
-        return false;
-    return setCWLimit(0.);
+
+bool AX12Base::setAngleLimits(float cw_angle, float ccw_angle) {
+    return setCWLimit(cw_angle) && setCCWLimit(ccw_angle);
 }
 
 bool AX12Base::setTorqueEnable(bool enable) {
@@ -119,32 +119,32 @@ bool AX12Base::isMoving() {
     return readRegister1(AX12_RAM_MOVING);
 }
 
-int AX12Base::readRegister1(uint8_t reg_start) {
+int AX12Base::readRegister1(AX12_Register reg_start) {
     if (!readData(reg_start, 1))
         return -1;
     
     return getData()[0];
 }
 
-int AX12Base::readRegister2(uint8_t reg_start) {
+int AX12Base::readRegister2(AX12_Register reg_start) {
     if (!readData(reg_start, 2))
         return -1;
     
     return getData()[0] | (getData()[1] << 8);
 }
 
-bool AX12Base::writeRegister1(uint8_t reg_start, uint8_t val) {
+bool AX12Base::writeRegister1(AX12_Register reg_start, uint8_t val) {
     uint8_t buffer[] = { val };
     return writeData(reg_start, 1, buffer);
 }
 
-bool AX12Base::writeRegister2(uint8_t reg_start, uint16_t val) {
+bool AX12Base::writeRegister2(AX12_Register reg_start, uint16_t val) {
     uint8_t buffer[] = { (uint8_t) (val & 0xFF), (uint8_t) (val >> 8) };
     return writeData(reg_start, 2, buffer);
 }
 
-bool AX12Base::readData(uint8_t reg_start, uint8_t len) {
-    uint8_t buffer[] = { reg_start, len };
+bool AX12Base::readData(AX12_Register reg_start, uint8_t len) {
+    uint8_t buffer[] = { (uint8_t) reg_start, len };
 
     bool ret = writePacket(AX12_INSTR_READ_DATA, 2, buffer);
 
@@ -155,15 +155,15 @@ bool AX12Base::readData(uint8_t reg_start, uint8_t len) {
     return ret;
 }
 
-bool AX12Base::writeData(uint8_t reg_start, uint8_t len, const uint8_t data[]) {
-    uint8_t buffer[32] = { reg_start };
+bool AX12Base::writeData(AX12_Register reg_start, uint8_t len, const uint8_t data[]) {
+    uint8_t buffer[32] = { (uint8_t) reg_start };
     memcpy(buffer + 1, data, len);
     
     return writePacket(AX12_INSTR_WRITE_DATA, 1 + len, buffer);
 }
 
 // Instruction packet : FF FF <ID> <LEN> <INSTR> <PAR0>..<PARN> <CKSUM>
-bool AX12Base::writePacket(uint8_t instr, uint8_t len, uint8_t data[]) {
+bool AX12Base::writePacket(AX12_Instr instr, uint8_t len, uint8_t data[]) {
     uint8_t send_packet[6 + len];
     bool ret = false;
 
@@ -255,7 +255,7 @@ uint8_t AX12Base::checksum(uint8_t data[], uint8_t len) {
     return (~res) & 0xFF;
 }
 
-void AX12Base::setCommError(int comm_error) {
+void AX12Base::setCommError(AX12_Comm_Error comm_error) {
     this->comm_error = comm_error;
     if (comm_error)
         debug("comm_error=%d\n", comm_error);

@@ -110,7 +110,7 @@ class AX12Base {
          * \return \a true if no communication error occured, \a false otherwise
          * \sa getCommError(), getErrors()
          */
-        bool readData(uint8_t reg_start, uint8_t len);
+        bool readData(AX12_Register reg_start, uint8_t len);
 
         /**
          * \brief Write \a len bytes starting at address \a reg_start
@@ -120,7 +120,7 @@ class AX12Base {
          * \return \a true if no communication error occured, \a false otherwise
          * \sa getCommError(), getErrors()
          */
-        bool writeData(uint8_t reg_start, uint8_t len, const uint8_t data[]);
+        bool writeData(AX12_Register reg_start, uint8_t len, const uint8_t data[]);
 
         /**
          * \brief Read a one-byte register at address \a reg_start
@@ -128,15 +128,15 @@ class AX12Base {
          * \return the 8-bit value read, or -1 if an error occured
          * \sa getCommError(), getErrors()
          */
-        int readRegister1(uint8_t reg_start);
+        int readRegister1(AX12_Register reg_start);
 
         /**
-         * \brief Read a two-byte register starting at address \a reg_start
+         * \brief Read a two-bytes register starting at address \a reg_start
          * \param reg_start lower register address
          * \return the 16-bit value read, or -1 if an error occured
          * \sa getCommError(), getErrors()
          */
-        int readRegister2(uint8_t reg_start);
+        int readRegister2(AX12_Register reg_start);
 
         /**
          * \brief Write to a one-byte register at address \a reg_start
@@ -145,16 +145,16 @@ class AX12Base {
          * \return \a true if no communication error occured, \a false otherwise
          * \sa getCommError(), getErrors()
          */
-        bool writeRegister1(uint8_t reg_start, uint8_t val);
+        bool writeRegister1(AX12_Register reg_start, uint8_t val);
 
         /**
-         * \brief Write a two-byte register starting at address \a reg_start
+         * \brief Write a two-bytes register starting at address \a reg_start
          * \param reg_start lower register address
          * \param val the 16-bit value to write
          * \return \a true if no communication error occured, \a false otherwise
          * \sa getCommError(), getErrors()
          */
-        bool writeRegister2(uint8_t reg_start, uint16_t val);
+        bool writeRegister2(AX12_Register reg_start, uint16_t val);
 
         /**
          * \brief Ping the AX12 until it responds
@@ -201,59 +201,65 @@ class AX12Base {
         /**
          * \brief Set the goal position of the AX12.
          * \param angle the angle in degrees (0 - 300)
-         * \param block block until the AX12 is done moving
+         * \param block true to block until the AX12 is done moving, false to return immediately
+         * \remarks The value of this register is ignored when in endless turn mode.
          * \return \a true if no communication error occured, \a false otherwise
          */
         bool setGoalPosition(float angle, bool block = false);
 
         /**
-         * \brief Set the goal speed of the AX12.
-         * \remarks Need lower and upper angle limit to 0
-         * \param speed from -1 to 1
+         * \brief Set the moving speed of the AX12 while moving to Goal Position.
          * \return \a true if no communication error occured, \a false otherwise
+         * \param speed from 0 to 1
+         * \sa setEndlessTurnMode() for endless turn mode
+         * \sa getCommError()
          */
-        bool setGoalSpeed(float speed);
-
-
-        /**
-         * \brief Set the AX12 in rotational mode
-         * \return \a true if no communication error occured, \a false otherwise
-         */
-        bool setRotationalMode();
+        bool setMovingSpeed(float speed);
 
         /**
-         * \brief Set the AX12 in rotational mode
+         * \brief Put the AX12 into endless turn mode.
+         * \remarks This sets both CW and CCW limits to 0.
+         * \param speed from -1 to 1 (actual speed will depend on the input voltage)
          * \return \a true if no communication error occured, \a false otherwise
          */
-        bool setPositionalMode();
+        bool setEndlessTurnMode(float speed);
 
         /**
          * \brief Get the clockwise angle limit (lower limit).
-         * \return the lower angle limit (0 - 300), or a negative value if a communication error occured
+         * \return the clockwise (lower) angle limit (0 - 300), or a negative value if a communication error occured
          */
         float getCWLimit();
 
         /**
          * \brief Set the clockwise angle limit (lower limit).
          * \remarks This value is stored in the EEPROM and is therefore non-volatile.
-         * \param angle the lower angle limit (0 - 300)
+         * \param angle the clockwise (lower) angle limit (0 - 300)
          * \return \a true if no communication error occured, \a false otherwise
          */
         bool setCWLimit(float angle);
 
         /**
          * \brief Get the counter-clockwise angle limit (upper limit).
-         * \return the upper angle limit (0 - 300), or a negative value if a communication error occured
+         * \return the counter-clockwise (upper) angle limit (0 - 300), or a negative value if a communication error occured
          */
         float getCCWLimit();
 
         /**
          * \brief Set the counter-clockwise angle limit (upper limit).
          * \remarks This value is stored in the EEPROM and is therefore non-volatile.
-         * \param angle the upper angle limit (0 - 300)
+         * \param angle the counter-clockwise (upper) angle limit (0 - 300)
          * \return \a true if no communication error occured, \a false otherwise
          */
         bool setCCWLimit(float angle);
+
+        /**
+         * \brief Set both the CW and CCW limits.
+         * \remarks These values are stored in the EEPROM and are therefore non-volatile.
+         * \param cw_angle the clockwise (lower) angle limit (0 - 300)
+         * \param ccw_angle the counter-clockwise (upper) angle limit (0 - 300)
+         * \return \a true if no communication error occured, \a false otherwise
+         */
+        bool setAngleLimits(float cw_angle, float ccw_angle);
 
         /**
          * \brief Enable or disable the torque of the AX12.
@@ -334,7 +340,7 @@ class AX12Base {
          * \param data The \a len parameters.
          * \return \a true if no communication error occured, \a false otherwise
          */
-        bool writePacket(uint8_t instr, uint8_t len, uint8_t data[]);
+        bool writePacket(AX12_Instr instr, uint8_t len, uint8_t data[]);
 
         virtual void debug(const char *format, ...);
         virtual void dumpHex(const uint8_t *buffer, int len);
@@ -354,7 +360,7 @@ class AX12Base {
          */
         static float regValToFloat(uint16_t val) {
             float res = val & 0x3ff;
-            if (val & 0x400)
+            if (val & (1 << 10))
                 res = -res;
             return res / 0x3ff;
         }
@@ -362,7 +368,7 @@ class AX12Base {
          * \brief Convert a signed float (-1.0 to +1.0) to a raw register value. This is used in speed and load registers.
          */
         static uint16_t floatToRegVal(float val) {
-            return ((val < 0) ? 0x400 : 0) | ((uint16_t) (fabs(val) * 0x3ff));
+            return ((val < 0) ? (1 << 10) : 0) | ((uint16_t) (fabs(val) * 0x3ff));
         }
     protected:
         /**
@@ -379,6 +385,7 @@ class AX12Base {
          * \param timeout the maximum time (in microseconds) to wait for a reply before aborting, or -1 to wait indefinitely.
          * \remarks This method must be implemented by subclasses. If an error occurs, the implementation must return -1 and comm_error should be set.
          * \return the number of bytes read or -1 if an error occured
+         * \sa setCommError()
          */
         virtual int readBytes(uint8_t *buffer, int len, int timeout) = 0;
 
@@ -388,6 +395,7 @@ class AX12Base {
          * \param len the number of bytes to write
          * \remarks This method must be implemented by subclasses. If an error occurs, the implementation must return -1 and comm_error should be set.
          * \return the number of bytes written or -1 if an error occured
+         * \sa setCommError()
          */
         virtual int writeBytes(const uint8_t *buffer, int len) = 0;
 
@@ -409,7 +417,12 @@ class AX12Base {
          */
         virtual void flushInput() = 0;
 
-        void setCommError(int comm_error);
+        /**
+         * \brief Set the current communication error.
+         * This is to be used by subclasses whenever an communication error needs to be reported.
+         * \param comm_error communication error code
+         */
+        void setCommError(AX12_Comm_Error comm_error);
 
     private:
         uint8_t checksum(uint8_t data[], uint8_t len);
