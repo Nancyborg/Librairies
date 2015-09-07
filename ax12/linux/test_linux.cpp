@@ -10,6 +10,11 @@ int main(int argc, char **argv) {
     }
 
     AX12 ax(argv[1], atoi(argv[2]), BAUDRATE);
+
+    if (ax.getCommError()) {
+        return EXIT_FAILURE;
+    }
+
     printf("waiting...\n");
     ax.pingWait();
 
